@@ -27,3 +27,25 @@ This lab uses **AWS Identity and Access Management (IAM)** to give three new emp
 - **Action**: the API calls the statement covers, for example `ec2:StopInstances` or `s3:List*`.
 - **Resource**: what the statement applies to, for example one bucket ARN, or `*` for everything.
 
+## Starting setup
+
+| Users (no permissions, no groups) | Groups | Policy | Type |
+| --- | --- | --- | --- |
+| user-1 | S3-Support | `AmazonS3ReadOnlyAccess` | AWS managed |
+| user-2 | EC2-Support | `AmazonEC2ReadOnlyAccess` | AWS managed |
+| user-3 | EC2-Admin | `EC2-Admin-Policy` | Inline |
+
+The policy documents are saved in [policies/](policies/) as YAML. The AWS managed ones are copies for reference. AWS may have updated its versions since.
+
+- [AmazonS3ReadOnlyAccess.yaml](policies/AmazonS3ReadOnlyAccess.yaml): `Get`, `List` and `Describe` actions on S3.
+- [AmazonEC2ReadOnlyAccess.yaml](policies/AmazonEC2ReadOnlyAccess.yaml): `Describe` and `List` actions on EC2, Elastic Load Balancing, CloudWatch and Auto Scaling. It allows viewing only, no changes.
+- [EC2-Admin-Policy.yaml](policies/EC2-Admin-Policy.yaml): `ec2:Describe*`, plus `ec2:StartInstances` and `ec2:StopInstances`.
+
+## Business scenario
+
+| User | Group | Permissions |
+| --- | --- | --- |
+| user-1 | S3-Support | Read-only access to Amazon S3 |
+| user-2 | EC2-Support | Read-only access to Amazon EC2 |
+| user-3 | EC2-Admin | View, start and stop EC2 instances |
+
