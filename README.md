@@ -93,6 +93,36 @@ Copy the **sign-in URL** from the IAM dashboard. It looks like `https://<account
 | user-3 | View EC2 instances | ✅ Allowed | `ec2:Describe*` |
 | user-3 | Stop an instance | ✅ Instance goes to *stopping* | `ec2:StopInstances` is granted |
 
+## Running it as code
+
+```text
+templates/iam-lab.yaml   CloudFormation template: users, groups, policies, memberships, S3 bucket, EC2 instance
+scripts/lab.sh           Script that deploys, tests and deletes it with the AWS CLI
+policies/                The policy documents on their own, for reference (YAML)
+```
+
+You need the [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), set up with `aws configure`. Run the script from Git Bash.
+
+**In your own AWS account** (builds the whole lab from nothing):
+
+```bash
+./scripts/lab.sh deploy 'Str0ng-Passw0rd!'   # creates the stack and prints the sign-in URL
+./scripts/lab.sh test                         # shows allowed/implicitDeny for each user and action
+./scripts/lab.sh delete                       # removes everything so you stop paying for the instance
+
+# skip the EC2 instance:
+./scripts/lab.sh deploy 'Str0ng-Passw0rd!' CreateTestInstance=false
+```
+
+**In the lab environment** (users and groups already exist, so only Task 2 is needed):
+
+```bash
+./scripts/lab.sh groups
+./scripts/lab.sh test
+```
+
+Do not run `deploy` in the lab environment. The users and groups already exist there, so the stack would fail.
+
 ## Takeaways
 
 - **Implicit deny by default.** A new IAM user can do nothing until a policy allows it.
