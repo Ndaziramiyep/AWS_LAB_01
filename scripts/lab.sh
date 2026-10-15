@@ -2,7 +2,9 @@
 # AWS Lab 01 - Introduction to IAM
 #
 # Usage:
-#   ./scripts/lab.sh deploy <password>   Create everything from templates/iam-lab.yaml (your own account)
+#   ./scripts/lab.sh deploy <password> [Key=Value ...]
+#                                        Create everything from templates/iam-lab.yaml (your own account),
+#                                        e.g. deploy 'Pa55word!' CreateTestInstance=false
 #   ./scripts/lab.sh groups              Task 2 only: add the existing lab users to the existing lab groups
 #   ./scripts/lab.sh test                Check each user's permissions with the IAM policy simulator
 #   ./scripts/lab.sh outputs             Show the sign-in URL, bucket name and instance ID
@@ -17,12 +19,13 @@ STACK_NAME="${STACK_NAME:-iam-lab-01}"
 TEMPLATE="$(cd "$(dirname "$0")/.." && pwd)/templates/iam-lab.yaml"
 
 deploy() {
-  local password="${1:?Usage: $0 deploy <password>}"
+  local password="${1:?Usage: $0 deploy <password> [Key=Value ...]}"
+  shift
   aws cloudformation deploy \
     --stack-name "$STACK_NAME" \
     --template-file "$TEMPLATE" \
     --capabilities CAPABILITY_NAMED_IAM \
-    --parameter-overrides UserPassword="$password"
+    --parameter-overrides UserPassword="$password" "$@"
   outputs
 }
 
@@ -75,5 +78,5 @@ case "${1:-}" in
   test)    test_permissions ;;
   outputs) outputs ;;
   delete)  delete ;;
-  *) sed -n '2,12p' "$0"; exit 1 ;;
+  *) sed -n '2,14p' "$0"; exit 1 ;;
 esac
