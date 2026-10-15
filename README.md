@@ -49,3 +49,53 @@ The policy documents are saved in [policies/](policies/) as YAML. The AWS manage
 | user-2 | EC2-Support | Read-only access to Amazon EC2 |
 | user-3 | EC2-Admin | View, start and stop EC2 instances |
 
+## Steps
+
+### Task 1: Look at the users and groups
+
+1. Go to **IAM → Users**. user-1 has a console password but no permissions and no groups.
+2. Go to **IAM → User groups**. Open each group's **Permissions** tab and read its policy in the **JSON** view.
+
+### Task 2: Add users to groups
+
+In **IAM → User groups → *group* → Users → Add users**:
+
+- S3-Support ← user-1
+- EC2-Support ← user-2
+- EC2-Admin ← user-3
+
+Each group should now show **1** in the Users column.
+
+The same thing with the AWS CLI:
+
+```bash
+aws iam add-user-to-group --group-name S3-Support  --user-name user-1
+aws iam add-user-to-group --group-name EC2-Support --user-name user-2
+aws iam add-user-to-group --group-name EC2-Admin   --user-name user-3
+
+# Check the result
+aws iam get-group --group-name S3-Support --query 'Users[].UserName'
+```
+
+### Task 3: Sign in as each user and test
+
+Copy the **sign-in URL** from the IAM dashboard. It looks like `https://<account-id>.signin.aws.amazon.com/console`. Open it in a private browser window and sign in as each user in turn. Make sure the console is set to the lab's Region.
+
+## Results
+
+| User | Action | Expected result | Why |
+| --- | --- | --- | --- |
+| user-1 | List S3 buckets and the objects in the lab bucket | ✅ Allowed | `s3:List*` and `s3:Get*` |
+| user-1 | View EC2 instances | ❌ No instances shown | No EC2 permissions |
+| user-2 | View EC2 instances | ✅ Allowed | `ec2:Describe*` |
+| user-2 | Stop an instance | ❌ "You are not authorized to perform this operation" | `ec2:StopInstances` is not granted |
+| user-2 | Open S3 | ❌ Access Denied | No S3 permissions |
+| user-3 | View EC2 instances | ✅ Allowed | `ec2:Describe*` |
+| user-3 | Stop an instance | ✅ Instance goes to *stopping* | `ec2:StopInstances` is granted |
+
+## Takeaways
+
+- **Implicit deny by default.** A new IAM user can do nothing until a policy allows it.
+- **Give permissions to groups, not to individual users.** To change what someone can do, move them to another group.
+- **Least privilege.** Each person gets only the access their job needs. Support staff can view resources, and only the admin can change instance state.
+- **Managed or inline.** Use managed policies for permission sets you reuse. Use inline policies for one-off, tightly scoped cases.
