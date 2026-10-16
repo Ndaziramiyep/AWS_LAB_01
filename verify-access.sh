@@ -18,7 +18,7 @@ sim() {
 echo "===== 1. Day-one access: each engineer can do their job, and no more ====="
 sim s3-user    s3:ListAllMyBuckets s3:PutObject ec2:RunInstances ec2:DescribeInstances
 sim ec2-user-1 ec2:RunInstances ec2:TerminateInstances ec2:DescribeInstances s3:PutObject
-sim ec2-user-2 ec2:DescribeInstances ec2:RunInstances ec2:TerminateInstances s3:PutObject
+sim ec2-user-2 ec2:DescribeInstances ec2:RunInstances ec2:TerminateInstances s3:ListAllMyBuckets s3:GetObject s3:PutObject
 
 echo "===== 2. Stress test: loosen ec2-user-2's group AND user to Administrator ====="
 aws iam attach-group-policy --group-name "$OBS_GROUP" \
@@ -26,7 +26,7 @@ aws iam attach-group-policy --group-name "$OBS_GROUP" \
 aws iam attach-user-policy --user-name ec2-user-2 \
   --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
 sleep 10   # IAM is eventually consistent
-sim ec2-user-2 ec2:RunInstances ec2:TerminateInstances ec2:StartInstances ec2:DescribeInstances
+sim ec2-user-2 ec2:RunInstances ec2:TerminateInstances ec2:StartInstances ec2:DescribeInstances s3:GetObject s3:PutObject
 
 echo "===== 3. Revert the stress test ====="
 aws iam detach-group-policy --group-name "$OBS_GROUP" \

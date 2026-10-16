@@ -10,7 +10,7 @@ IAM permission boundaries and recorded by CloudTrail.
 |--------------|------------------------|---------------------------|------------------------------|
 | `s3-user`    | storage-engineers      | `AmazonS3FullAccess`      | `boundary-storage`           |
 | `ec2-user-1` | compute-engineers      | `AmazonEC2FullAccess`     | `boundary-compute`           |
-| `ec2-user-2` | oncall-observers       | `AmazonEC2ReadOnlyAccess` | `boundary-compute-observer`  |
+| `ec2-user-2` | oncall-observers       | `AmazonEC2ReadOnlyAccess`, `AmazonS3ReadOnlyAccess` | `boundary-compute-observer`  |
 
 Key design principles:
 
