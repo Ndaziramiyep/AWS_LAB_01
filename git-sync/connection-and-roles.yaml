@@ -50,6 +50,10 @@ Resources:
             Condition:
               StringEquals:
                 events:ManagedBy: cloudformation.sync.codeconnections.amazonaws.com
+          - Sid: DescribeEventRules
+            Effect: Allow
+            Action: events:DescribeRule
+            Resource: '*'
           - Sid: PassStackRole
             Effect: Allow
             Action: iam:PassRole
